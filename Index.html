@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>150-Day Workout Tracker — 150 Days Transformation</title>
+  <meta name="description" content="Track your 150-day transformation: daily workouts, progress tracker, dashboard with charts, streaks and video tutorials." />
+  <meta property="og:title" content="150-Day Workout Tracker" />
+  <meta property="og:description" content="Track your 150-day transformation: daily workouts, progress tracker, dashboard with charts, streaks and video tutorials." />
+  <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/2977/2977286.png" />
+  <meta name="theme-color" content="#0b3d91"/>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2977/2977286.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#07102a;
+      --card:#0f1b38;
+      --muted:#98a6c8;
+      --accent:#00c2a8; /* professional teal accent */
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(180deg,var(--bg) 0%, #071026 60%);
+      color:#eaf2ff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding-bottom:60px;
+      display:flex;
+      justify-content:center;
+    }
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      padding:22px;
+    }
+
+    /* NAV */
+    nav{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0be7c0);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#012;
+      box-shadow:0 6px 18px rgba(3,70,109,0.12);
+    }
+    .brand h1{font-size:18px;margin:0}
+    .navlinks{display:flex;gap:10px;align-items:center}
+    .navlinks button{
+      background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:10px;color:var(--muted);
+      cursor:pointer;font-weight:600;
+    }
+    .navlinks button:hover{color:var(--accent);border-color:rgba(0,194,168,0.12);background:var(--glass)}
+
+    /* HERO */
+    .hero{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:18px;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    .hero-card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:20px;border-radius:var(--radius);box-shadow:0 8px 28px rgba(2,8,23,0.6);
+    }
+    .hero h2{margin:0 0 8px 0;font-size:24px;color:#f2f9ff}
+    .hero p{margin:0 0 16px;color:var(--muted)}
+    .cta-group{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      background:var(--accent);color:#012;border:none;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,194,168,0.12);transition:transform .12s;
+    }
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(0,194,168,0.12)}
+    .btn:hover{transform:translateY(-3px)}
+    .hero-stats{display:flex;gap:10px;margin-top:14px}
+    .stat{background:rgba(255,255,255,0.02); padding:12px;border-radius:10px;min-width:120px;text-align:center}
+    .stat h3{margin:0;color:#fff;font-size:18px}
+    .stat p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+
+    /* TRAILER CARD (right) */
+    .video-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:14px;border-radius:var(--radius);display:flex;flex-direction:column;gap:12px;
+      align-items:stretch;
+    }
+    .video-card iframe{border-radius:10px;overflow:hidden;border:0;width:100%;height:200px}
+    .downloadNote{font-size:12px;color:var(--muted);margin-top:8px}
+
+    /* SECTIONS */
+    section{margin-top:18px}
+    .card{
+      background:var(--card);padding:16px;border-radius:12px;margin-bottom:12px;
+      box-shadow:0 8px 24px rgba(2,8,23,0.45);
+    }
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;
+    }
+
+    /* day button styles */
+    .day-btn{
+      padding:12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);font-weight:600;cursor:pointer;text-align:center;min-height:56px;
+    }
+    .day-btn:hover{border-color:rgba(0,194,168,0.12);color:#fff}
+    .day-btn.completed{background:linear-gradient(90deg, rgba(0,194,168,0.08), rgba(0,194,168,0.04));color:#dff9f2;border-color:rgba(0,194,168,0.14);text-decoration:line-through}
+
+    .back-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;margin-bottom:8px}
+    .small {font-size:13px;color:var(--muted)}
+
+    /* workout card */
+    .workout{
+      display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;background:rgba(255,255,255,0.01);margin-bottom:10px;
+    }
+    .workout h4{margin:0;font-size:16px}
+    .workout p{margin:4px 0 0 0;color:var(--muted);font-size:13px}
+    .workout-actions{display:flex;gap:8px;align-items:center}
+
+    /* fixed back button (visible only in non-home views) */
+    .fixed-back{
+      position:fixed;
+      top:12px;
+      left:12px;
+      z-index:999;
+      background:rgba(0,0,0,0.45);
+      color:#fff;
+      border-radius:12px;
+      padding:8px 12px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      display:none; /* toggled by JS */
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.04);
+      font-weight:600;
+      backdrop-filter: blur(6px);
+    }
+
+    /* responsive */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .video-card iframe{height:180px}
+    }
+    @media (max-width:520px){
+      .navlinks{display:none}
+      .brand h1{font-size:15px}
+      .hero h2{font-size:20px}
+    }
+
+    /* footer */
+    footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+    /* subtle view fade */
+    .view {transition: opacity .18s ease, transform .18s ease;}
+    .hidden {display:none}
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <!-- Navigation -->
+    <nav id="mainNav">
+      <div class="brand">
+        <div class="logo">150</div>
+        <div>
+          <h1>150-Day Workout Tracker</h1>
+          <div class="small">Track · Progress · Transform</div>
+        </div>
+      </div>
+
+      <div class="navlinks">
+        <button onclick="showView('home')">Home</button>
+        <button onclick="showView('how')">How it works</button>
+        <button onclick="openDays()">Start / View Days</button>
+        <button onclick="openDashboard()">Open Dashboard</button>
+        <button onclick="showView('contact')">Contact</button>
+      </div>
+    </nav>
+
+    <!-- Fixed Back (visible in Days & Dashboard) -->
+    <button id="fixedBack" class="fixed-back" onclick="backToHome()">← Back</button>
+
+    <!-- HOME view -->
+    <main id="homeView" class="view">
+      <!-- HERO -->
+      <div id="hero" class="hero">
+        <div class="hero-card">
+          <h2>🏋️‍♂️ 150-Day Transformation — Stay Consistent. Track Progress.</h2>
+          <p>Use the daily tracker to log workouts, watch short tutorials, and view progress across 150 days. Built for mobile-first use and easy day-by-day accountability.</p>
+
+          <div class="cta-group">
+            <button class="btn" onclick="openDays()">Start / View Days</button>
+            <button class="btn secondary" onclick="openDashboard()">Open Dashboard</button>
+          </div>
+
+          <div class="hero-stats" style="margin-top:14px;">
+            <div class="stat">
+              <h3 id="statDays">0</h3>
+              <p>Days Completed</p>
+            </div>
+            <div class="stat">
+              <h3 id="statWorkouts">0</h3>
+              <p>Workouts Logged</p>
+            </div>
+            <div class="stat">
+              <h3 id="statStreak">0</h3>
+              <p>Best Streak</p>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="small">Tip: Complete all items of the day, check the small boxes, then press "Complete Day" for full progress.</div>
+        </div>
+
+        <div class="video-card">
+          <iframe id="heroVideo" src="https://www.youtube.com/embed/YQ2s_Y7g5Qk" allowfullscreen></iframe>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:600">Quick Tutorial</div>
+            <div class="small">Tap any workout to view its video</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOW IT WORKS (also part of home) -->
+      <section id="how" class="card view">
+        <h3>How it works</h3>
+        <p class="small">Single page app — use the Start button to open the 150-day grid. Each day contains the routine (adjusts every week). Mark each workout checkbox to log it. When all checkboxes of the day are marked, press "Complete Day". Dashboard aggregates stats and shows weekly calories estimate.</p>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <div style="padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)">Progress Bar</div>
+          <div style="padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)">Weekly Charts</div>
+          <div style="padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)">Video Tutorials</div>
+          <div style="padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02)">Streaks & Badges (planned)</div>
+        </div>
+      </section>
+
+      <!-- small days preview on home (not full grid) -->
+      <section class="card view">
+        <h3>Quick Progress</h3>
+        <div id="homeDaysPreview" class="small">Open "Start / View Days" to see the full 150-day grid.</div>
+      </section>
+
+      <!-- contact -->
+      <section id="contact" class="card view">
+        <h3>Contact & Info</h3>
+        <p class="small">This app is a personal workout tracker — standard estimated calorie calculations are shown for motivation, not medical advice.</p>
+        <p class="small">Created with ❤️ by you. Keep your brand consistent on social channels for stronger traction.</p>
+      </section>
+    </main>
+
+    <!-- DAYS view (full-screen, hidden initially) -->
+    <div id="daysView" class="view hidden">
+      <div id="daysWrap"></div>
+    </div>
+
+    <!-- DASHBOARD view (full-screen, hidden initially) -->
+    <div id="dashboardView" class="view hidden">
+      <div id="dashboardWrap"></div>
+    </div>
+
+    <footer id="mainFooter" class="view small" style="margin-top:20px">
+      © <span id="year"></span> 150-Day Workout Tracker — Built for mobile. Save page to use offline.
+    </footer>
+  </div>
+
+  <!-- Video modal -->
+  <div id="videoModal" style="display:none; position:fixed; inset:0; background:rgba(1,6,12,0.85); z-index:9999; align-items:center; justify-content:center;">
+    <div style="width:92%; max-width:720px; position:relative;">
+      <iframe id="videoFrame" style="width:100%; height:420px; border-radius:12px;" frameborder="0" allowfullscreen></iframe>
+      <button onclick="closeVideo()" style="position:absolute; top:10px; right:10px; background:var(--accent); border:none; color:#012; padding:8px 12px; border-radius:10px; cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Workout data & logic (kept from your original)
+     ***********************/
+    const workoutPlan = [
+      {
+        title: "Chest and Shoulders",
+        workouts: [
+          { name: "Flat Dumbbell Press", baseSets: 3, baseReps: 20, calFactor: 0.35 },
+          { name: "Incline Pushups", baseSets: 5, baseReps: 30, calFactor: 0.45 },
+          { name: "Normal Pushups", baseSets: 3, baseReps: 20, calFactor: 0.45 },
+          { name: "Front Raises", baseSets: 4, baseReps: 20, calFactor: 0.35 },
+          { name: "Lateral Raises", baseSets: 4, baseReps: 20, calFactor: 0.35 },
+          { name: "Dumbbell Rows", baseSets: 4, baseReps: 20, calFactor: 0.35 }
+        ]
+      },
+      {
+        title: "Biceps and Abs",
+        workouts: [
+          { name: "Bicep Curl", baseSets: 4, baseReps: 20, calFactor: 0.35 },
+          { name: "Hammer Curls", baseSets: 4, baseReps: 20, calFactor: 0.35 },
+          { name: "Wrist Curls", baseSets: 5, baseReps: 30, calFactor: 0.3 },
+          { name: "Reverse Wrist Curls", baseSets: 5, baseReps: 30, calFactor: 0.3 },
+          { name: "Sit-ups", baseSets: 5, baseReps: 20, calFactor: 0.4 },
+          { name: "Russian Twists", baseSets: 5, baseReps: 40, calFactor: 0.35 },
+          { name: "Leg Raises", baseSets:5, baseReps:20, calFactor: 0.35 },
+          { name: "Plank", baseSets: 5, baseReps: 60, calFactor: 0.18 }
+        ]
+      },
+      {
+        title: "Legs",
+        workouts: [
+          { name: "Squats", baseSets: 5, baseReps: 100, calFactor: 0.5 },
+          { name: "Jump Squats", baseSets: 5, baseReps: 50, calFactor: 0.55 }
+        ]
+      },
+      { title: "Rest Day", workouts: [] },
+      { title: "Biceps and Abs", workouts: [] },
+      { title: "Chest and Shoulders", workouts: [] },
+      { title: "Rest Day", workouts: [] }
+    ];
+    workoutPlan[4].workouts = workoutPlan[1].workouts;
+    workoutPlan[5].workouts = workoutPlan[0].workouts;
+
+    const totalDays = 150;
+    const daysWrap = document.getElementById('daysWrap');
+    const dashboardWrap = document.getElementById('dashboardWrap');
+    let completed = JSON.parse(localStorage.getItem('completed')) || {};
+    let currentDay = null;
+
+    function save(){ localStorage.setItem('completed', JSON.stringify(completed)); updateHeroStats(); }
+
+    function getRoutine(dayNumber) {
+      const week = Math.floor((dayNumber - 1) / 7);
+      const dayIndex = (dayNumber - 1) % 7;
+      const plan = workoutPlan[dayIndex];
+      const adjustedWorkouts = plan.workouts.map((w) => {
+        const setInc = Math.floor(week / 1);
+        const repInc = Math.floor(week / 1) * 5;
+        const isPlank = w.name.toLowerCase().includes("plank");
+        return {
+          ...w,
+          sets: w.baseSets + Math.floor(setInc / 2),
+          reps: isPlank ? w.baseReps + 10 * week : w.baseReps + repInc,
+          calFactor: w.calFactor
+        };
+      });
+      return { title: plan.title, workouts: adjustedWorkouts };
+    }
+
+    function getStreak() {
+      const days = Object.keys(completed).filter(k => !k.includes('-')).map(Number).sort((a,b)=>a-b);
+      if(days.length===0) return 0;
+      let streak = 1, maxStreak = 1;
+      for (let i = 1; i < days.length; i++) {
+        if (days[i] === days[i-1] + 1) {
+          streak++;
+          maxStreak = Math.max(maxStreak, streak);
+        } else {
+          streak = 1;
+        }
+      }
+      return maxStreak;
+    }
+
+    // VIEW MANAGEMENT (single page app behavior)
+    const homeView = document.getElementById('homeView');
+    const daysView = document.getElementById('daysView');
+    const dashboardView = document.getElementById('dashboardView');
+    const fixedBack = document.getElementById('fixedBack');
+
+    function showView(viewId){
+      // Show only the requested sub-section(s) inside home (home sections are in homeView)
+      // Views: 'home' -> show homeView, 'how' -> scroll inside home, 'contact' -> scroll
+      if(viewId === 'home'){
+        homeView.classList.remove('hidden');
+        daysView.classList.add('hidden');
+        dashboardView.classList.add('hidden');
+        fixedBack.style.display = 'none';
+        document.getElementById('mainNav').style.display = 'flex';
+        document.getElementById('mainFooter').style.display = 'block';
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else if(viewId === 'how' || viewId === 'contact'){
+        showView('home');
+        setTimeout(()=> {
+          const el = document.getElementById(viewId);
+          if(el) el.scrollIntoView({behavior:'smooth'});
+        }, 160);
+      }
+    }
+
+    function openDays(){
+      // show only the days view
+      homeView.classList.add('hidden');
+      daysView.classList.remove('hidden');
+      dashboardView.classList.add('hidden');
+      fixedBack.style.display = 'block';
+      document.getElementById('mainNav').style.display = 'none';
+      document.getElementById('mainFooter').style.display = 'none';
+      renderDays(); // build days grid into daysWrap
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function openDashboard(){
+      homeView.classList.add('hidden');
+      daysView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      fixedBack.style.display = 'block';
+      document.getElementById('mainNav').style.display = 'none';
+      document.getElementById('mainFooter').style.display = 'none';
+      renderDashboard();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function backToHome(){
+      showView('home');
+    }
+
+    // RENDER DAYS
+    function renderDays() {
+      const daysDone = Object.keys(completed).filter(k => !k.includes("-")).length;
+      const percent = Math.floor((daysDone / totalDays) * 100);
+      document.getElementById('statDays').innerText = daysDone;
+
+      let html = `<div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h3 style="margin:0">Your 150-Day Grid</h3>
+            <div class="small">Tap a day to open routine & mark workouts complete</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">Progress</div>
+            <div style="background:#071226;border-radius:8px;padding:6px;margin-top:6px;width:160px">
+              <div style="width:${percent}%;background:linear-gradient(90deg,var(--accent),#00e0b0);height:10px;border-radius:8px"></div>
+            </div>
+            <div class="small" style="margin-top:6px">${percent}%</div>
+          </div>
+        </div>
+      </div>`;
+
+      html += `<div class="card"><div class="grid">`;
+      for(let i=1;i<=totalDays;i++){
+        const done = completed[i] ? 'completed' : '';
+        html += `<button class="day-btn ${done}" onclick="showDay(${i})">Day ${i}</button>`;
+      }
+      html += `</div></div>`;
+      daysWrap.innerHTML = html;
+    }
+
+    function showDay(day) {
+      currentDay = day;
+      const { title, workouts } = getRoutine(day);
+      let html = `<div class="card"><button class="back-btn" onclick="openDays()">← Back</button>
+        <h3>Day ${day}: ${title}</h3>`;
+
+      if(workouts.length===0){
+        html += `<p class="small">Rest day — great time for light mobility or walking.</p>`;
+      } else {
+        workouts.forEach((w, idx) => {
+          const key = `${day}-${idx}`;
+          const checked = completed[key] ? 'checked' : '';
+          html += `<div class="workout">
+            <div>
+              <h4>${w.name}</h4>
+              <p class="small">Sets: ${w.sets} &middot; Reps: ${w.reps}${w.name.toLowerCase().includes('plank') ? ' sec' : ''}</p>
+            </div>
+            <div class="workout-actions">
+              <input type="checkbox" id="chk${key}" ${checked} onchange="toggleComplete('${key}')">
+              <button class="btn secondary" onclick="showTutorial('${getVideoId(w.name)}')">Watch</button>
+            </div>
+          </div>`;
+        });
+        html += `<div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn" onclick="markDayComplete(${day})">✅ Complete Day ${day}</button>
+          <button class="btn secondary" onclick="markDayIncomplete(${day})">Undo Day</button>
+        </div>`;
+      }
+
+      html += `</div>`;
+      daysWrap.innerHTML = html;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function toggleComplete(key){
+      completed[key] = !completed[key];
+      const parts = key.split('-');
+      if(parts.length===2){
+        const day = parts[0];
+        if(!completed[key] && completed[day]) delete completed[day];
+      }
+      save();
+      renderDays();
+      if(currentDay) showDay(currentDay);
+    }
+
+    function markDayComplete(day){
+      const { workouts } = getRoutine(day);
+      const allDone = workouts.every((_, idx) => completed[`${day}-${idx}`]);
+      if(!allDone){
+        alert('Please check each workout checkbox (on this day) before marking complete.');
+        return;
+      }
+      completed[day] = true;
+      save();
+      renderDays();
+      alert('Nice! Day marked complete 🎉');
+    }
+    function markDayIncomplete(day){
+      const keys = Object.keys(completed);
+      keys.forEach(k=>{
+        if(k.startsWith(day + '-')) delete completed[k];
+      });
+      delete completed[day];
+      save();
+      renderDays();
+    }
+
+    // DASHBOARD
+    function renderDashboard(){
+      const weeks = Math.ceil(totalDays/7);
+      const weeklyCalories = Array(weeks).fill(0);
+      let totalCalories = 0, totalSets = 0, totalWorkouts = 0;
+      for(let day=1; day<=totalDays; day++){
+        if(!completed[day]) continue;
+        const { workouts } = getRoutine(day);
+        const week = Math.floor((day-1)/7);
+        workouts.forEach((w, idx)=>{
+          const key = `${day}-${idx}`;
+          if(completed[key]){
+            const repsOrSecs = w.reps;
+            const burned = repsOrSecs * w.sets * (w.calFactor || 0.35);
+            totalCalories += burned;
+            totalSets += w.sets;
+            totalWorkouts += 1;
+            weeklyCalories[week] += burned;
+          }
+        });
+      }
+      const dayKeys = Object.keys(completed).filter(k=>!k.includes('-'));
+      const streak = getStreak();
+
+      let html = `<div class="card">
+        <button class="back-btn" onclick="openDashboard()">← Back</button>
+        <h3>📊 Dashboard Summary</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="min-width:200px">
+            <p class="small"><strong>Days Completed:</strong> ${dayKeys.length}</p>
+            <p class="small"><strong>Workouts Completed:</strong> ${totalWorkouts}</p>
+            <p class="small"><strong>Sets Completed:</strong> ${totalSets}</p>
+            <p class="small"><strong>Calories Burned (est):</strong> ${Math.round(totalCalories)} kcal</p>
+            <p class="small"><strong>Best Streak:</strong> ${streak} days</p>
+          </div>
+          <div style="flex:1;min-width:260px">
+            <canvas id="calorieChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>`;
+
+      dashboardWrap.innerHTML = html;
+
+      setTimeout(()=>{
+        const ctx = document.getElementById('calorieChart');
+        if(!ctx) return;
+        new Chart(ctx.getContext('2d'), {
+          type:'bar',
+          data:{
+            labels: weeklyCalories.map((_,i)=>`W${i+1}`),
+            datasets:[{
+              label:'Calories (est)',
+              data: weeklyCalories.map(c=>Math.round(c)),
+              backgroundColor: 'rgba(0,194,168,0.95)',
+            }]
+          },
+          options:{
+            scales:{
+              y:{beginAtZero:true,ticks:{color:'#dfeefc'}},
+              x:{ticks:{color:'#dfeefc'}}
+            },
+            plugins:{legend:{display:false}}
+          }
+        });
+      },80);
+      window.scrollTo({top:0,behavior:'smooth'});
+      updateHeroStats();
+    }
+
+    // video modal
+    function showTutorial(videoId){
+      const modal = document.getElementById('videoModal');
+      const frame = document.getElementById('videoFrame');
+      frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      modal.style.display = 'flex';
+    }
+    function closeVideo(){
+      const modal = document.getElementById('videoModal');
+      const frame = document.getElementById('videoFrame');
+      frame.src = '';
+      modal.style.display = 'none';
+    }
+
+    function getVideoId(name) {
+      const map = {
+        "Flat Dumbbell Press": "YQ2s_Y7g5Qk",
+        "Incline Pushups": "Me9bHFAxnCs",
+        "Normal Pushups": "WDIpL0pjun0",
+        "Front Raises": "zkP0MsTcIVU",
+        "Lateral Raises": "XPPfnSEATJA",
+        "Dumbbell Rows": "DMo3HJoawrU",
+        "Bicep Curl": "cBSD6mQIPQk",
+        "Hammer Curls": "BRVDS6HVR9Q",
+        "Wrist Curls": "3VLTzIrnb5g",
+        "Reverse Wrist Curls": "osYPwlBiCRM",
+        "Sit-ups": "onaQ0v_J5uU",
+        "Russian Twists": "IJDOoVyVjhc",
+        "Leg Raises": "Cwuxy8eo7iw",
+        "Plank": "pvIjsG5Svck",
+        "Squats": "xqvCmoLULNY",
+        "Jump Squats": "BRfxI2Es2lE"
+      };
+      return map[name] || "YQ2s_Y7g5Qk";
+    }
+
+    // hero stats & small preview
+    function updateHeroStats(){
+      document.getElementById('year').innerText = new Date().getFullYear();
+      const daysDone = Object.keys(completed).filter(k => !k.includes("-")).length;
+      const workoutsLogged = Object.keys(completed).filter(k => k.includes('-')).length;
+      document.getElementById('statDays').innerText = daysDone;
+      document.getElementById('statWorkouts').innerText = workoutsLogged;
+      document.getElementById('statStreak').innerText = getStreak();
+
+      // small preview on home
+      const previewEl = document.getElementById('homeDaysPreview');
+      previewEl.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="small">Days Done: ${daysDone}</div>
+        <div class="small">Workouts: ${workoutsLogged}</div>
+        <div class="small">Streak: ${getStreak()} days</div>
+      </div>`;
+    }
+
+    // init
+    updateHeroStats();
+    renderDays();
+
+    // expose to global (for inline onclick usage)
+    window.openDays = openDays;
+    window.openDashboard = openDashboard;
+    window.showView = showView;
+    window.backToHome = backToHome;
+    window.showDay = showDay;
+    window.toggleComplete = toggleComplete;
+    window.markDayComplete = markDayComplete;
+    window.markDayIncomplete = markDayIncomplete;
+    window.renderDashboard = renderDashboard;
+    window.showTutorial = showTutorial;
+    window.closeVideo = closeVideo;
+    window.getVideoId = getVideoId;
+<footer>
+    © 2025 WorkoutChallenge. All rights reserved. |
+    <a href="privacy.html" target="_blank">Privacy Policy</a> |
+    <a href="terms.html" target="_blank">Terms & Conditions</a>
+  </footer>
+  </script>
+</body>
+</html>
